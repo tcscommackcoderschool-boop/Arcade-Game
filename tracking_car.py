@@ -43,7 +43,15 @@ class TrackingCar(Car):
     def update(self, delta_time:float):
         """ Updates the car's position based on its movements """
         if self.replay_movements and self.movements:
-            frame = self.movements.pop(0)
+            if isinstance(self.movements, list):
+                frame = self.movements.pop(0)
+            else:
+                try:
+                    frame = next(self.movements)
+                except StopIteration:
+                    self.replay_movements = False
+                    self.movements = []
+                    return
             for num in frame:
                 action = Action(num)
                 if action == Action.MOVE_FORWARD:

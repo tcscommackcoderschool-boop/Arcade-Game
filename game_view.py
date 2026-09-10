@@ -63,7 +63,8 @@ class GameView(arcade.View):
 
         self.ui_manager = arcade.gui.UIManager()
         self.ui_manager.enable()
-        self.ui_layout = arcade.gui.UIBoxLayout(space_between=20)
+        self.ui_manager_is_enabled = True
+        self.ui_layout = arcade.gui.UIAnchorLayout()
 
         resume_button = arcade.gui.UIFlatButton(text="Resume", width=max(200, self.window.width // 8))
         self.ui_layout.add(resume_button)
@@ -71,13 +72,13 @@ class GameView(arcade.View):
         def on_click_resume(event):
             self.toggle_gui()
 
-        self.ui_manager
+        self.ui_manager.add(self.ui_layout)
         logger.info("Switched to GameView")
     #
     #
     def on_hide_view(self):
         """ Handles what to do when the window switches away from this view """
-        
+        self.ui_manager.disable()
         
     #
     #
@@ -209,10 +210,11 @@ class GameView(arcade.View):
         
         
     def toggle_gui(self):
-        if self.ui_manager.is_enabled():
-            self.ui_manager.disable()
+        if self.ui_manager_is_enabled:
+            self.ui_layout.visible = False
         else:
-            self.ui_manager.enable()
+            self.ui_layout.visible = True
+        self.ui_manager_is_enabled = not self.ui_manager_is_enabled
         
         
 if __name__ == "__main__":
