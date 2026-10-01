@@ -15,6 +15,7 @@ class TrackingCar(Car):
             self.movements = movements
         self.replay_movements = len(self.movements) > 0
         self.current_frame = []
+        
 
     def move_backward(self, speed:float):
         """ Moves the car backward """

@@ -45,13 +45,21 @@ class GameView(arcade.View):
         car.Car.set_physics_engine(self.physics)
         self.spawnpoints = [tile.position for tile in self.tilemap.sprite_lists["Spawns"]]
 
+        self.checkpoints = {}
+        for tile in self.tilemap.sprite_lists["Checkpoints"]:
+            num = os.path.basename(tile._texture._file_path).split(".")[0]
+            if num not in self.checkpoints:
+                self.checkpoints[num] = arcade.SpriteList()
+        
+            self.checkpoints[num].append(tile)
+
         self.player = tracking_car.TrackingCar(os.path.join(d, "Assets/racing-pack/PNG/Cars/car_black_1.png"), CAR_SCALE)
         self.player.position = self.spawnpoints[0]
         self.start_point = self.player.position
         self.player_list = arcade.SpriteList()
         self.player_list.append(self.player)
 
-        aicar1 = ai_car.AICar(os.path.join(d, "Assets/racing-pack/PNG/Cars/car_red_1.png"), CAR_SCALE)
+        aicar1 = ai_car.AICar(os.path.join(d, "Assets/racing-pack/PNG/Cars/car_red_1.png"), CAR_SCALE, checkpoints=self.checkpoints)
         aicar1.position = self.spawnpoints[1]
         self.player_list.append(aicar1)
 
@@ -66,13 +74,17 @@ class GameView(arcade.View):
         self.ui_manager_is_enabled = True
         self.ui_layout = arcade.gui.UIAnchorLayout()
 
-        resume_button = arcade.gui.UIFlatButton(text="Resume", width=max(200, self.window.width // 8))
+        resume_button = arcade.gui.UIFlatButton(text="Resume", width=max(200, self.window.width // 8), y=self.center_y + 200)
         self.ui_layout.add(resume_button)
         @resume_button.event("on_click")
         def on_click_resume(event):
             self.toggle_gui()
+        start_button = arcade.gui.UIFlatButton(text="Start", width=max(200, self.window.width // 8))
+        self.ui_layout.add(start_button)
 
         self.ui_manager.add(self.ui_layout)
+        self.toggle_gui()
+
         logger.info("Switched to GameView")
     #
     #
